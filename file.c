@@ -21,20 +21,33 @@ int     bfs(int x, int y, char **map)
 
     q.qx[q.back] = x;
     q.qy[q.back] = y;
-
     q.back++;
+
     while (q.front < q.back)
     {
-           if(x < 0 || y < 0 || x >= MAP_W || y >= MAP_H)
-                 return 0;
-            if(map[y][x] == '1' || map[y][x] = 'F')
-                    return 0;
-        if(map[y][x] == '0' || map[y][x] == 'N')
-             return 1;
-        if(map[y][x] == ' ')
-              map[y][x] = 'F';
-        add_to_neighbors(dx, dy);
+        int cx = q.qx[q.front];
+        int cy = q.qy[q.front];
+        q.front++;
+
+        if(cx < 0 || cy < 0 || cx >= MAP_W || cy >= MAP_H)
+                return 0;
+        if(map[cy][cx] == '1' || map[cy][cx] == 'F')
+            continue;
+        if(map[cy][cx] == '0' || map[cy][cx] == 'N')
+             return 0;
+        if(map[cy][cx] == ' ')
+              map[cy][cx] = 'F';
+        for(int i = 0; i < 4 ; i++)
+        {
+            int nx = cx + dx[i];
+            int ny = cy + dy[i];
+
+            q.qx[q.back] = nx;
+            q.qy[q.back] = ny;
+            q.back++;
+        }
     }
+    return 1;
     
  
     
@@ -46,19 +59,18 @@ int     check_for_leak(char **map )
         int y = 0;
         while(x < 7)
         {
-            y = 0;
-            while(y < 5)
+            y = -1;
+            while(++y < 5)
             {
                 if(map[y][x] == ' ')
                 {
                     if(!bfs(x, y , map))
-                        return 0;
+                        return 1;
                 }
             }
-
             x++;
         }
-        return 1;
+        return 0;
 }
 
 int main()
